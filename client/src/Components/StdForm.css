@@ -292,3 +292,78 @@ hr {
 .delete-file:hover {
     background-color: #cc0000;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    h2 {
+        font-size: 1rem;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    select, 
+    input[type="date"], 
+    input, 
+    textarea {
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .img-sec {
+        flex-direction: column;
+        align-items: center;
+        margin-right: 0;
+    }
+
+    .label-image {
+        width: 100%;
+    }
+
+    .images {
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .image {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1rem;
+    }
+
+    h2 {
+        font-size: 0.9rem;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    input, 
+    select {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .label-image {
+        font-size: 0.8rem;
+        height: 2.5rem;
+    }
+}

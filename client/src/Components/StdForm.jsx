@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import './StdForm.css';
 
 const StdForm = () => {
@@ -39,15 +40,63 @@ const StdForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Combine all form data including image and files
-    const formData = {
-      ...values,
-      image: selectedImage,
-      files: uploadedFiles
-    };
-    console.log(formData);
+    
+    try {
+      // Create FormData object for file uploads
+      const formData = new FormData();
+      
+      // Add student details
+      formData.append('firstname', values.firstname);
+      formData.append('lastname', values.lastname);
+      formData.append('email', values.email);
+      formData.append('grade', values.grade);
+      formData.append('gender', values.gender);
+      formData.append('birthday', values.birthday);
+      formData.append('activities', JSON.stringify(values.activities));
+      
+      // Add profile image if exists
+      if (selectedImage?.file) {
+        formData.append('profile_image', selectedImage.file);
+      }
+      
+      // Add documents
+      uploadedFiles.forEach(file => {
+        formData.append('documents', file.file);
+      });
+
+      // First, submit student details
+      const studentResponse = await axios.post('http://127.0.0.1:5000/api/students/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (studentResponse.data.success) {
+        alert('Student information submitted successfully!');
+        // Reset form
+        resetForm();
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Error submitting form. Please try again.');
+    }
+  };
+
+  const resetForm = () => {
+    setValues({
+      firstname: '',
+      lastname: '',
+      email: '',
+      grade: '',
+      gender: '',
+      birthday: '',
+      activities: [],
+      image: '',
+    });
+    setSelectedImage(null);
+    setUploadedFiles([]);
   };
 
   const handleImageUpload = (event) => {
@@ -69,31 +118,35 @@ const StdForm = () => {
     setSelectedImage(null);
   };
 
+  // Add this before appending files to FormData
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = [];
     const invalidFiles = [];
+    const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB in bytes
 
     files.forEach(file => {
-      if (allowedFileTypes.includes(file.type)) {
-        validFiles.push({
-          id: Math.random().toString(36).substr(2, 9),
-          name: file.name,
-          file: file,
-          size: (file.size / 1024).toFixed(2) + ' KB',
-          type: file.type
-        });
-      } else {
-        invalidFiles.push(file.name);
-      }
+        if (file.size > MAX_FILE_SIZE) {
+            invalidFiles.push(`${file.name} (exceeds 16MB)`);
+        } else if (allowedFileTypes.includes(file.type)) {
+            validFiles.push({
+                id: Math.random().toString(36).substr(2, 9),
+                name: file.name,
+                file: file,
+                size: (file.size / 1024).toFixed(2) + ' KB',
+                type: file.type
+            });
+        } else {
+            invalidFiles.push(file.name);
+        }
     });
 
     if (invalidFiles.length > 0) {
-      alert(`The following files are not allowed: ${invalidFiles.join(', ')}\nPlease upload only PDF, DOC, or DOCX files.`);
+        alert(`The following files are not allowed: ${invalidFiles.join(', ')}\nPlease upload only PDF, DOC, or DOCX files under 16MB.`);
     }
 
     if (validFiles.length > 0) {
-      setUploadedFiles([...uploadedFiles, ...validFiles]);
+        setUploadedFiles([...uploadedFiles, ...validFiles]);
     }
 
     event.target.value = "";
