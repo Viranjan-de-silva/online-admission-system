@@ -7,7 +7,7 @@ This project is an **Online Admission System** built with a **Python Flask** bac
 ## Prerequisites
 
 Before setting up the project, ensure you have the following installed on your system:
-- Python 3.x
+- Python 3.10.x
 - Node.js and npm
 - MySQL Server
 
