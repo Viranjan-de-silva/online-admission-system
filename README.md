@@ -7,7 +7,7 @@ This project is an **Online Admission System** built with a **Python Flask** bac
 ## Prerequisites
 
 Before setting up the project, ensure you have the following installed on your system:
-- Python 3.10.x
+- Python 3.x
 - Node.js and npm
 - MySQL Server
 
@@ -80,16 +80,14 @@ The Flask backend will be accessible at `http://localhost:5000`.
 
 ### 7. Set Up and Run the Frontend
 
-In a new terminal window:
-
-1. Go back to the root directory:
+1. Create a new React application:
 ```bash
-cd ..
+npx create-react-app <project-name>
 ```
 
-2. Navigate to the `client` folder:
+2. Navigate to your new React project:
 ```bash
-cd client
+cd <project-name>
 ```
 
 3. Install the required npm package:
@@ -97,7 +95,9 @@ cd client
 npm install axios
 ```
 
-4. Start the React development server:
+4. Copy the `src` folder from the cloned repository's client directory to your new React project, replacing the existing src folder.
+
+5. Start the React development server:
 ```bash
 npm start
 ```
