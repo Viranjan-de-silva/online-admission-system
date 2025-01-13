@@ -3,9 +3,9 @@ import axios from 'axios';
 import './StdForm.css';
 
 const StdForm = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [values, setValues] = useState({
+  const [selectedImage, setSelectedImage] = useState(null); // State for handling the uploaded image
+  const [uploadedFiles, setUploadedFiles] = useState([]); // State for handling the list of uploaded files
+  const [values, setValues] = useState({ // State for handling form input values
     firstname: '',
     lastname: '',
     email: '',
@@ -15,7 +15,13 @@ const StdForm = () => {
     activities: [],
     image: '',
   });
-  
+
+  // Add this to your state declarations at the top of the component
+  const [fileStats, setFileStats] = useState({
+    accepted: 0,
+    rejected: 0,
+    processing: 0
+  });
 
   // Allowed file types
   const allowedFileTypes = [
@@ -24,7 +30,7 @@ const StdForm = () => {
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'  // DOCX
   ];
 
-  const handleChanges = (e) => {
+  const handleChanges = (e) => { // Handles changes in form inputs
     const { name, value, type, checked } = e.target;
 
     if (type === "checkbox") {
@@ -84,6 +90,7 @@ const StdForm = () => {
     }
   };
 
+  // Function to reset form values
   const resetForm = () => {
     setValues({
       firstname: '',
@@ -97,6 +104,11 @@ const StdForm = () => {
     });
     setSelectedImage(null);
     setUploadedFiles([]);
+    setFileStats({
+      accepted: 0,
+      rejected: 0,
+      processing: 0
+    });
   };
 
   const handleImageUpload = (event) => {
@@ -118,7 +130,7 @@ const StdForm = () => {
     setSelectedImage(null);
   };
 
-  // Add this before appending files to FormData
+  // HandleFileUpload function to initialize files as processing
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
     const validFiles = [];
@@ -126,36 +138,55 @@ const StdForm = () => {
     const MAX_FILE_SIZE = 16 * 1024 * 1024; // 16MB in bytes
 
     files.forEach(file => {
-        if (file.size > MAX_FILE_SIZE) {
-            invalidFiles.push(`${file.name} (exceeds 16MB)`);
-        } else if (allowedFileTypes.includes(file.type)) {
-            validFiles.push({
-                id: Math.random().toString(36).substr(2, 9),
-                name: file.name,
-                file: file,
-                size: (file.size / 1024).toFixed(2) + ' KB',
-                type: file.type
-            });
-        } else {
-            invalidFiles.push(file.name);
-        }
+      if (file.size > MAX_FILE_SIZE) {
+        invalidFiles.push(`${file.name} (exceeds 16MB)`);
+      } else if (allowedFileTypes.includes(file.type)) {
+        validFiles.push({
+          id: Math.random().toString(36).substr(2, 9),
+          name: file.name,
+          file: file,
+          size: (file.size / 1024).toFixed(2) + ' KB',
+          type: file.type,
+          status: 'processing'
+        });
+      } else {
+        invalidFiles.push(file.name);
+      }
     });
 
     if (invalidFiles.length > 0) {
-        alert(`The following files are not allowed: ${invalidFiles.join(', ')}\nPlease upload only PDF, DOC, or DOCX files under 16MB.`);
+      alert(`The following files are not allowed: ${invalidFiles.join(', ')}\nPlease upload only PDF, DOC, or DOCX files under 16MB.`);
     }
 
     if (validFiles.length > 0) {
-        setUploadedFiles([...uploadedFiles, ...validFiles]);
+      setUploadedFiles(prev => [...prev, ...validFiles]);
+      setFileStats(prev => ({
+        ...prev,
+        processing: prev.processing + validFiles.length
+      }));
     }
 
     event.target.value = "";
   };
 
+  // Function to delete a file from the uploaded files list
   const handleDeleteFile = (fileId) => {
-    setUploadedFiles(uploadedFiles.filter(file => file.id !== fileId));
+    setUploadedFiles(prevFiles => {
+      const updatedFiles = prevFiles.filter(file => file.id !== fileId); // Remove file from list
+      
+      // Recalculate all stats after deletion
+      const newStats = {
+        accepted: updatedFiles.filter(f => f.status === 'accepted').length,
+        rejected: updatedFiles.filter(f => f.status === 'rejected').length,
+        processing: updatedFiles.filter(f => f.status === 'processing').length
+      };
+  
+      setFileStats(newStats);
+      return updatedFiles;
+    });
   };
-
+  
+  // Function to get file type icon based on MIME type
   const getFileTypeIcon = (fileType) => {
     switch (fileType) {
       case 'application/pdf':
@@ -166,6 +197,28 @@ const StdForm = () => {
       default:
         return '📄';
     }
+  };
+
+  // Handle file status changes (accepted, rejected, processing)
+  const handleFileAcceptance = (fileId, newStatus) => {
+    setUploadedFiles(prevFiles => {
+      const updatedFiles = prevFiles.map(file => {
+        if (file.id === fileId) {
+          return { ...file, status: newStatus };
+        }
+        return file;
+      });
+  
+      // Recalculate all stats based on current files
+      const newStats = {
+        accepted: updatedFiles.filter(f => f.status === 'accepted').length,
+        rejected: updatedFiles.filter(f => f.status === 'rejected').length,
+        processing: updatedFiles.filter(f => f.status === 'processing').length
+      };
+  
+      setFileStats(newStats);
+      return updatedFiles;
+    });
   };
 
   return (
@@ -193,7 +246,7 @@ const StdForm = () => {
           <option value="grade3">Grade 03</option>
         </select>
 
-        <label htmlFor='gender'>Gender: </label>
+        <label htmlFor='gender'>Gender: </label> 
         <input type='radio' name='gender' value="male" onChange={handleChanges}/> Male
         <input type='radio' name='gender' value="female" onChange={handleChanges}/> Female
         <input type='radio' name='gender' value="other" onChange={handleChanges}/> Other
@@ -201,7 +254,7 @@ const StdForm = () => {
         <label htmlFor="datePicker">Date of birth: </label>
         <input type="date" id="datePicker" name="birthday" onChange={handleChanges}/>
         
-        <fieldset>
+        <fieldset> {/* Extracurricular activities section */}
           <legend>Extracurricular Activities:</legend>
           <div>
             <input type="checkbox" id="music" name="activities" value="music" onChange={handleChanges}/>
@@ -263,12 +316,22 @@ const StdForm = () => {
           {uploadedFiles.length > 0 && (
             <div className="uploaded-files">
               <h3>Uploaded Documents:</h3>
+              <p className='arp'>
+                Accepted: {fileStats.accepted}, 
+                Rejected: {fileStats.rejected}, 
+                Processing: {fileStats.processing}
+              </p>
               <ul>
                 {uploadedFiles.map(file => (
                   <li key={file.id}>
                     <span>
                       {getFileTypeIcon(file.type)} {file.name} ({file.size})
                     </span>
+                    <select name="grade" id="subject" onChange={(e) => handleFileAcceptance(file.id, e.target.value)}>
+                      <option value="processing">Edit</option>
+                      <option value="accepted">Accepted</option>
+                      <option value="rejected">Rejected</option>
+                    </select>
                     <button 
                       type="button" 
                       onClick={() => handleDeleteFile(file.id)}

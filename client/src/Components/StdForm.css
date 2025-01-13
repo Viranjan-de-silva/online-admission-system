@@ -279,6 +279,26 @@ hr {
     border-radius: 4px;
 }
 
+.uploaded-files select {
+    padding: 2px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 12px;
+    width: 100px;
+    margin-left: 0%;
+
+}
+
+.uploaded-files p {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    color: #a3a2a2;
+    font-size: 12px;
+    font-display: italic;
+}
+
+
 .delete-file {
     background-color: #ff4444;
     color: white;
