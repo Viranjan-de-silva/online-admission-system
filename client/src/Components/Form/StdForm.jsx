@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './StdForm.css';
 
-const StdForm = () => {
+const StdForm = ({ studentData, isEditMode, onSubmit }) => {
   const [selectedImage, setSelectedImage] = useState(null); // State for handling the uploaded image
   const [uploadedFiles, setUploadedFiles] = useState([]); // State for handling the list of uploaded files
   const [values, setValues] = useState({ // State for handling form input values

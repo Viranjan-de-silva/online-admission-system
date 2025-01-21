@@ -1,0 +1,118 @@
+/* Standard Styles for the Table */
+.std-records-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.std-records-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.std-records-table th,
+.std-records-table td {
+    text-align: left;
+    padding: 8px 12px; /* Reduced padding for smaller row height */
+    border-bottom: 1px solid #ddd;
+}
+
+.std-records-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.std-records-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.std-records-table img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Buttons */
+.button {
+    padding: 6px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #45a049;
+}
+
+.edit-button {
+    background-color: #848285;
+}
+
+.edit-button:hover {
+    background-color: #2e2e2d;
+}
+
+.delete-button {
+    background-color: #f44336;
+}
+
+.delete-button:hover {
+    background-color: #da190b;
+}
+
+/* Align buttons side by side and move "Delete" button to the right */
+.actions {
+    display: flex;
+    justify-content: flex-start; /* Default to left-aligned */
+    gap: 10px; /* Adds space between buttons */
+}
+
+.actions .delete-button {
+    margin-left: auto; /* Pushes the delete button to the right */
+}
+
+/* Loader Styles */
+.loader {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Data Message */
+.no-data-message {
+    font-size: 18px;
+    color: #777;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Make table responsive */
+@media (max-width: 768px) {
+    .std-records-table {
+        font-size: 14px;
+    }
+
+    .std-records-table th,
+    .std-records-table td {
+        padding: 6px 8px;
+    }
+
+    .actions {
+        justify-content: center; /* Center buttons on small screens */
+    }
+}
