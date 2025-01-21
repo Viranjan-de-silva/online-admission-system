@@ -16,7 +16,7 @@ class Student(db.Model):
     documents = db.relationship('Document', backref='student', lazy=True)
 
 class Document(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=True)
     filename = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.String(255), nullable=False)
     file_type = db.Column(db.String(50))
